@@ -484,15 +484,10 @@ pre{
           <p>An artist-authored layer for simple material values. Fill layers can override properties such as Base Color, Roughness, Metallic, and IOR without requiring a full source texture set.</p>
         </div>
 
-        <div class="card">
-          <h3>Effect Layer</h3>
-          <p>A layer whose main role is an effect contribution rather than a new base material. This can be useful when a treatment deserves its own top-level place in the recipe.</p>
-        </div>
+        <h3>New layer versus child effect</h3>
+        <p>Effects are not a layer type &mdash; they are children you add to an existing layer. Add a new Material or Fill Layer when a different physical surface is being introduced; add a child effect when the surface already in the stack is being changed. Keeping that distinction usually makes complex stacks easier to read later.</p>
 
-        <h3>Material Layer versus child Effect</h3>
-        <p>Use a new Material Layer when a different physical surface is being introduced. Use a child effect when the existing surface is being changed. Keeping that distinction usually makes complex stacks easier to read later.</p>
-
-        <div class="image-slot"><span>IMAGE — Side-by-side examples of Material, Fill and Effect layer rows.</span></div>
+        <div class="image-slot"><span>IMAGE — Side-by-side examples of Material and Fill layer rows, and a layer with child effects.</span></div>
       </section>
 
       <section id="composition">
