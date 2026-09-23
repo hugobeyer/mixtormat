@@ -344,7 +344,7 @@ pre{
 <div class="grid">
 <div class="mini"><strong>Ships in Mixtormat 1.0</strong>65 source surfaces across 18 families, 47 reusable masks, and a worked example recipe — all evaluated on the GPU while you edit.</div>
 <div class="mini"><strong>Nine effects</strong>Peeling, Stain, Erosion, Grade, Breakup, Worn Edges, Flow Warp, Layer Blur, and Runoff, plus Craquelure as its own mask child.</div>
-<div class="mini"><strong>Complete ID toolchain</strong>Pattern, Cluster, Combine, and the new ID Group producers feed Random, Ramp, HSV, Color ID, UV From IDs, Relief From IDs, and parameter drivers.</div>
+<div class="mini"><strong>Complete ID toolchain</strong>Pattern IDs lays out regions; the From-IDs filters — Random, Ramp, HSV, Color ID, UV From IDs, Relief From IDs — turn them into per-region variation and drive parameter drivers.</div>
 <div class="mini"><strong>Generators &amp; groups</strong>Strata Carver and Fracture rewrite layer height before compositing; layer groups broadcast one shared child stack across members.</div>
 </div>
 </section>
@@ -584,19 +584,15 @@ pre{
 <p>ID tools divide a surface into discrete regions. Unlike a soft grayscale mask, every region can have a stable identity. This is useful when you want variation per brick, stone, flake, tile, crack island, or procedural cell.</p>
 <div class="card">
 <h3>ID Group</h3>
-<p>Combines the two ID maps nearest above it into one. A continuous feature signal sampled from the layer's height — plain <strong>Height</strong> or <strong>Curvature</strong> — chooses per pixel between the older, macro map (A) and the newer, micro map (B): wherever the feature clears <strong>Threshold</strong>, B takes over, so the broad regions of the first map subdivide exactly where the surface says so. <strong>Feature Scale</strong>, <strong>Smooth Radius</strong>, and <strong>Invert</strong> shape the decision. ID Group also publishes a <strong>Boundary</strong> outline mask that can be reused like any other mask. It needs two ID producers above it; with fewer, it contributes nothing.</p>
+<p>A hierarchical ID container: give it ID producers as inputs and it composes them into one map — a coarse layout from one source subdivided by a finer one where a height or curvature feature clears a threshold, with an outline <strong>Boundary</strong> mask it publishes for reuse. Authoring is being rebuilt around this explicit hierarchy in 1.0; the node stays inert in saved recipes until then, and new work starts from Pattern IDs plus the From-IDs filters.</p>
 </div>
 <div class="card">
 <h3>Color ID</h3>
 <p>Build regions from color information. This is useful when an authored ID texture or color-coded source already contains the segmentation you need.</p>
 </div>
 <div class="card">
-<h3>Cluster IDs</h3>
-<p>Cluster a surface into region labels instead of producing soft coverage. Because the result is discrete IDs, it is intended to feed later ID-aware variation rather than behaving like a normal mask. Authoring new Cluster IDs is retired in 1.0 — existing recipes keep evaluating unchanged, and ID Group with Pattern IDs covers new work.</p>
-</div>
-<div class="card">
-<h3>Combine IDs</h3>
-<p>Reads the ID map above it and republishes a merged or coarser one — the only ID node that both consumes and produces a map. New authoring is retired in 1.0 in favour of ID Group; existing nodes keep evaluating exactly as before. One known limitation in older recipes: a Combine IDs under Breakup cannot consume Breakup's map on the GPU — keep Combine IDs under Pattern or Cluster IDs.</p>
+<h3>Cluster IDs &amp; Combine IDs (legacy)</h3>
+<p>Earlier nodes that coarsened and merged region maps. Authoring is retired in 1.0 — existing recipes keep evaluating exactly as authored, so nothing visually changes on load — but new materials compose IDs from Pattern IDs and the From-IDs filters instead.</p>
 </div>
 <div class="card">
 <h3>Pattern IDs</h3>
@@ -755,7 +751,7 @@ pre{
 <h3>Copy as Instance</h3>
 <p>Pasting an instance keeps a live relationship to its source child — the payload and parameter bindings are re-read from the source on every composite. Use this when several layers should share the same mask, generated setup, ID tool, or effect configuration. Instance actions are <strong>Go to Source</strong>, <strong>Break Instance</strong> (freeze the values it is showing as this child's own), <strong>Replace Source</strong> (re-point it at another compatible child), and <strong>Copy Instance Reference</strong>. If the source child disappears, the instance keeps showing the last values it received rather than going blank.</p>
 <h3>Copy Output</h3>
-<p>Children that publish named outputs — Pattern IDs' Gap, Breakup's Region IDs, Gap, Edge and Pieces, Worn Edges' Wear, ID Group's Boundary — can be right-clicked with <strong>Copy Output</strong> and pasted as a mask anywhere in the recipe. The pasted mask reads the live output, so it keeps following the source child as you tune it.</p>
+<p>Children that publish named outputs — Pattern IDs' Gap, Breakup's Region IDs, Gap, Edge and Pieces, Worn Edges' Wear — can be right-clicked with <strong>Copy Output</strong> and pasted as a mask anywhere in the recipe. The pasted mask reads the live output, so it keeps following the source child as you tune it.</p>
 <h3>When to use which</h3>
 <p>Use an instance when the repeated setup should stay synchronized. Use a normal copy when the new child should immediately diverge. Use Copy Output when what you want is not the setup but one of the maps it produces.</p>
 <figure class="doc-shot"><img alt="" loading="lazy" src="docs-assets/22-instances.png"/></figure>
@@ -772,7 +768,7 @@ pre{
 <h3>Bypass child</h3>
 <p>Temporarily removes the selected Mask, Generated Mask, or Effect from the preview only. It is useful for A/B checking one operation without changing the saved recipe structure.</p>
 <h3>Debug views</h3>
-<p>Feature-preview controls can show information such as the selected Layer Mask or Cluster IDs directly. Use these when the shaded result does not make it obvious whether a problem comes from region selection or from the effect using that region.</p>
+<p>Feature-preview controls can show information such as the selected Layer Mask or an ID child's Region IDs directly. Use these when the shaded result does not make it obvious whether a problem comes from region selection or from the effect using that region.</p>
 <h3>Channel preview</h3>
 <p>Press <code>V</code> with the preview focused to cycle a raw, unlit view of one composited output at a time: <strong>Material</strong> (the normal shaded result) → <strong>Base Color</strong> → <strong>Normal</strong> → <strong>Roughness</strong> → <strong>AO</strong> → <strong>Metallic</strong> → <strong>F0</strong> → <strong>Height</strong> → <strong>Fuzz Influence</strong>, then back to Material. This is a diagnostic view with no toolbar control — it shows the channel exactly as it was composited, with no lighting applied, which is the quickest way to tell whether a problem is in the channel data or in how it is being lit.</p>
 <h3>Displacement and UV orientation</h3>
